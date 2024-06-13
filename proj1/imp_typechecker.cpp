@@ -32,9 +32,13 @@ void ImpTypeChecker::visit(VarDecList* decs) {
 }
 
 void ImpTypeChecker::visit(VarDec* vd) {
+  ImpType tt = ImpValue::get_basic_type(vd->type);
   list<string>::iterator it;
+
+  if (tt == NOTYPE) { cout << "Tipo invalido: " << vd->type << endl; exit(0);}
+  
   for (it = vd->vars.begin(); it != vd->vars.end(); ++it) {
-    // env.add_var(*it, type);
+    env.add_var(*it, tt);
   }   
   return;
 }
@@ -50,8 +54,19 @@ void ImpTypeChecker::visit(StatementList* s) {
 
 void ImpTypeChecker::visit(AssignStatement* s) {
   ImpType type = s->rhs->accept(this);
-  // typecheck
- 
+  if (!env.check(s->id)) {
+    cout << "Variable " << s->id << " undefined" << endl;
+    exit(0);
+  }
+  ImpType lhs = env.lookup(s->id);
+
+  if (lhs != type) {
+    cout << "Type Error en Assign: Tipos de variable " << s->id;
+    cout << " y RHS no coinciden" << endl;
+    exit(0);
+  }
+  env.update(s->id, type);
+
   return;
 }
 
@@ -61,6 +76,8 @@ void ImpTypeChecker::visit(PrintStatement* s) {
 }
 
 void ImpTypeChecker::visit(IfStatement* s) {
+  ImpType tipo = s->cond->accept(this);
+  if(tipo!=TBOOL){cout<< "Se esperaba un tipo booleano en la sentencia if"; exit(0);}
   s->cond->accept(this);
   s->tbody->accept(this);
   if (s->fbody != NULL)
@@ -70,6 +87,7 @@ void ImpTypeChecker::visit(IfStatement* s) {
 
 void ImpTypeChecker::visit(WhileStatement* s) {
   ImpType tcond = s->cond->accept(this);
+  if(tcond!=TBOOL){cout<< "Se esperaba un tipo booleano en la sentencia while"; exit(0);}
   s->body->accept(this);
  return;
 }
@@ -77,29 +95,48 @@ void ImpTypeChecker::visit(WhileStatement* s) {
 ImpType ImpTypeChecker::visit(BinaryExp* e) {
   ImpType t1 = e->left->accept(this);
   ImpType t2 = e->right->accept(this);
-  ImpType result;
+
+  if (t1 != t2) {
+    cout << "La operacion " << e->binopToString(e->op) << " tiene argumentos incorrectos" << endl;
+    exit(0);
+  }
+
   switch(e->op) {
   case PLUS: 
-  case MINUS:
+  case MINUS: 
   case MULT:
-  case DIV:
-  case EXP:
-    break;
+  case DIV: 
+  case EXP: 
+    if(t1 == TBOOL){
+      cout << "ERROR: La operacion " << e->binopToString(e->op) << " no sporta bools" << endl;
+      exit(0);
+    }
+    return TINT; break;
   case LT: 
-  case LTEQ:
+  case LTEQ: 
   case EQ:
-    break;
+  case AND:
+  case OR:
+    if(t1 == TINT){
+      cout << "ERROR: La operacion " << e->binopToString(e->op) << " no sporta ints" << endl;
+      exit(0);
+    }
+    return TBOOL; break;
   }
-  return result;
 }
 
 ImpType ImpTypeChecker::visit(NumberExp* e) {
-  ImpType t; // ??
+  ImpType t = TINT;
+  return t;
+}
+
+ImpType ImpTypeChecker::visit(BoolConst* e) {
+  ImpType t = TBOOL;
   return t;
 }
 
 ImpType ImpTypeChecker::visit(IdExp* e) {
-  ImpType t;
+  ImpType t = env.lookup(e->id);
   return t;
 }
 
@@ -109,10 +146,10 @@ ImpType ImpTypeChecker::visit(ParenthExp* ep) {
 
 ImpType ImpTypeChecker::visit(CondExp* e) {
   ImpType btype = e->cond->accept(this);
-
+  if(btype!=TBOOL){cout << "Se esperaba bool en cexp", exit(0);}
   ImpType ttype = e->etrue->accept(this);
   ImpType ftype = e->efalse->accept(this);
-
+  if(ttype!=ftype){cout << "Tipo distinto en cexp",exit(0);}
   return NOTYPE;
 }
 

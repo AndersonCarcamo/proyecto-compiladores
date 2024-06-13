@@ -108,12 +108,27 @@ ImpValue ImpInterpreter::visit(BinaryExp* e) {
   ImpValue result;
   ImpValue v1 = e->left->accept(this);
   ImpValue v2 = e->right->accept(this);
-  if (v1.type != TINT || v2.type != TINT) {
-    cout << "Error de tipos: operandos en operacion binaria tienen que ser enteros" << endl;
+
+  if (v1.type != v2.type)
+  {
+    cout << "Error de tipos: operacion entre tipos distintos" << endl;
     exit(0);
   }
+
   int iv, iv1, iv2;
   bool bv;
+
+  if (v1.type == TINT)
+  {
+    iv1 = v1.int_value;
+    iv2 = v2.int_value;
+  }
+  else
+  {
+    iv1 = v1.bool_value;
+    iv2 = v2.bool_value;
+  }
+
   ImpType type = NOTYPE;
   iv1 = v1.int_value;
   iv2 = v2.int_value;
@@ -130,6 +145,8 @@ ImpValue ImpInterpreter::visit(BinaryExp* e) {
   case LT: bv = (iv1 < iv2) ? 1 : 0; type = TBOOL; break;
   case LTEQ: bv = (iv1 <= iv2) ? 1: 0; type = TBOOL; break;
   case EQ: bv = (iv1 == iv2) ? 1 : 0; type = TBOOL; break;
+  case AND: bv = iv1 && iv2; type = TBOOL; break;
+  case OR: bv = iv1 || iv2; type = TBOOL; break;
   }
   if (type == TINT) result.int_value = iv;
   else result.bool_value = bv;
@@ -141,6 +158,14 @@ ImpValue ImpInterpreter::visit(NumberExp* e) {
   ImpValue v;
   v.set_default_value(TINT);
   v.int_value = e->value;
+  return v;
+}
+
+ImpValue ImpInterpreter::visit(BoolConst *e)
+{
+  ImpValue v;
+  v.set_default_value(TBOOL);
+  v.bool_value = e->value;
   return v;
 }
 
