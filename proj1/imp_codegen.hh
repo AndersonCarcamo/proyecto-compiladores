@@ -37,7 +37,7 @@ private:
   string nolabel;
   int current_label;
   Environment<int> direcciones;
-  int siguiente_direccion;
+  int siguiente_direccion, mem_locals;
   void codegen(string label, string instr);
   void codegen(string label, string instr, int arg);
   void codegen(string label, string instr, string jmplabel);

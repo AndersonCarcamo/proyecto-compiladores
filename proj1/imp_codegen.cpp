@@ -29,12 +29,13 @@ void ImpCodeGen::codegen(Program* p, string outfname) {
   nolabel = "";
   current_label = 0;
   siguiente_direccion = 0;
+  mem_locals = 0;
   p->accept(this);
   ofstream outfile;
   outfile.open(outfname);
   outfile << code.str();
   outfile.close();
-
+  cout << "Memoria variables locales: " << mem_locals << endl;
   return;
 }
 
@@ -47,10 +48,13 @@ void ImpCodeGen::visit(Program* p) {
 }
 
 void ImpCodeGen::visit(Body * b) {
+  int dir = siguiente_direccion;
   direcciones.add_level();  
   b->var_decs->accept(this);
   b->slist->accept(this);
   direcciones.remove_level();
+  if (siguiente_direccion > mem_locals) mem_locals = siguiente_direccion;
+  siguiente_direccion = dir;
   return;
 }
 
@@ -66,7 +70,7 @@ void ImpCodeGen::visit(VarDec* vd) {
   list<string>::iterator it;
   for (it = vd->vars.begin(); it != vd->vars.end(); ++it){
     // cual es la siguiente direccion?
-    direcciones.add_var(*it, 0);
+    direcciones.add_var(*it, siguiente_direccion++);
   }
   return;
 }
@@ -81,13 +85,13 @@ void ImpCodeGen::visit(StatementList* s) {
 
 void ImpCodeGen::visit(AssignStatement* s) {
   s->rhs->accept(this);
-
+  codegen(nolabel, "store", direcciones.lookup(s->id));
   return;
 }
 
 void ImpCodeGen::visit(PrintStatement* s) {
   s->e->accept(this);
-
+  code << "print" << endl;
   return;
 }
 
@@ -96,14 +100,13 @@ void ImpCodeGen::visit(IfStatement* s) {
   string l2 = next_label();
   
   s->cond->accept(this);
-
+  codegen(nolabel,"jmpz", l1);
   s->tbody->accept(this);
-
+  codegen(nolabel, "goto",l2);
   if (s->fbody!=NULL) {
     s->fbody->accept(this);
   }
-
- 
+  codegen(l2, "skip");
   return;
 }
 
@@ -111,10 +114,12 @@ void ImpCodeGen::visit(WhileStatement* s) {
   string l1 = next_label();
   string l2 = next_label();
 
+  codegen(l1, "skip");
   s->cond->accept(this);
-
+  codegen(nolabel, "goto", l2);
   s->body->accept(this);
-
+  codegen(nolabel, "goto", l1);
+  codegen(l2, "skip");
   return;
 }
 
@@ -132,17 +137,17 @@ int ImpCodeGen::visit(BinaryExp* e) {
   case EQ:  op = "eq"; break;
   default: cout << "binop " << Exp::binopToString(e->op) << " not implemented" << endl;
   }
-
+  codegen(nolabel, op);
   return 0;
 }
 
 int ImpCodeGen::visit(NumberExp* e) {
-
+  codegen(nolabel, "push", e->value);
   return 0;
 }
 
 int ImpCodeGen::visit(IdExp* e) {
-
+  codegen(nolabel, "load", direcciones.lookup(e->id));
   return 0;
 }
 
@@ -156,10 +161,11 @@ int ImpCodeGen::visit(CondExp* e) {
   string l2 = next_label();
  
   e->cond->accept(this);
-
+  codegen(nolabel, "jmpz", l1);
   e->etrue->accept(this);
-
+  codegen(nolabel, "goto", l2);
+  codegen(l1, "skip");
   e->efalse->accept(this);
-
+  codegen(l2, "skip");
   return 0;
 }
