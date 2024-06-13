@@ -21,7 +21,8 @@ public:
   int argint; // could be label or int argument
   Instruction(string l, IType itype);
   Instruction(string l, IType itype, int arg);
-  Instruction(string l, IType itype, string arg);  
+  Instruction(string l, IType itype, string arg);
+  // Un convert de string a token
   //static InstrType convertKeywordType(Token::KeywordType ktype);
 };
 
@@ -30,6 +31,10 @@ class SVM {
 private:
 
   int sp, pc, fp, ep, hp;
+  // sp: stack pointer
+  // pc: program counter
+  // fp: 
+
   int stack[MEM_SIZE];
   int max_stack;
 
