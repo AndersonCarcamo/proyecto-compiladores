@@ -27,6 +27,7 @@ public:
   ImpValue visit(BinaryExp* e);
   ImpValue visit(NumberExp* e);
   ImpValue visit(IdExp* e);
+  ImpValue visit(BoolConst* e);
   ImpValue visit(ParenthExp* e);
   ImpValue visit(CondExp* e);
 };

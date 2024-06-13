@@ -21,6 +21,7 @@ public:
   int visit(BinaryExp* e);
   int visit(NumberExp* e);
   int visit(IdExp* e);
+  int visit(BoolConst* e);
   int visit(ParenthExp* e);
   int visit(CondExp* e);
 };

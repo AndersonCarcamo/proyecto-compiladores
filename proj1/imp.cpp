@@ -13,6 +13,8 @@ string Exp::binopToString(BinaryOp op) {
   case LT: return "<";
   case LTEQ: return "<=";
   case EQ: return "==";
+  case AND: return "and";
+  case OR: return "or";
   }
   return "";
 }
@@ -22,6 +24,7 @@ string Exp::binopToString(BinaryOp op) {
 BinaryExp::BinaryExp(Exp* l, Exp* r, BinaryOp op):left(l),right(r),op(op) {}
 NumberExp::NumberExp(int v):value(v) {}
 IdExp::IdExp(string id):id(id) {}
+BoolConst::BoolConst(bool value):value(value) {}
 ParenthExp::ParenthExp(Exp *e):e(e){}
 CondExp::CondExp(Exp *c, Exp* et, Exp* ef):cond(c), etrue(et), efalse(ef){}
 
@@ -29,6 +32,7 @@ Exp::~Exp() {}
 BinaryExp::~BinaryExp() { delete left; delete right; }
 NumberExp::~NumberExp() { }
 IdExp::~IdExp() { }
+BoolConst::~BoolConst() { }
 ParenthExp::~ParenthExp(){ delete e; }
 CondExp::~CondExp(){ delete cond; delete etrue; delete efalse; }
 
@@ -40,6 +44,9 @@ int NumberExp::accept(ImpVisitor* v) {
   return v->visit(this);
 }
 int IdExp::accept(ImpVisitor* v) {
+  return v->visit(this);
+}
+int BoolConst::accept(ImpVisitor* v) {
   return v->visit(this);
 }
 int ParenthExp::accept(ImpVisitor* v) {
@@ -59,6 +66,9 @@ ImpValue NumberExp::accept(ImpValueVisitor* v) {
 ImpValue IdExp::accept(ImpValueVisitor* v) {
   return v->visit(this);
 }
+ImpValue BoolConst::accept(ImpValueVisitor* v) {
+  return v->visit(this);
+}
 ImpValue ParenthExp::accept(ImpValueVisitor* v) {
   return v->visit(this);
 }
@@ -74,6 +84,9 @@ ImpType NumberExp::accept(TypeVisitor* v) {
   return v->visit(this);
 }
 ImpType IdExp::accept(TypeVisitor* v) {
+  return v->visit(this);
+}
+ImpType BoolConst::accept(TypeVisitor* v) {
   return v->visit(this);
 }
 ImpType ParenthExp::accept(TypeVisitor* v) {

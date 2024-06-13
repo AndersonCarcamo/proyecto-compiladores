@@ -97,6 +97,11 @@ int ImpPrinter::visit(NumberExp* e) {
   return 0;
 }
 
+int ImpPrinter::visit(BoolConst* e) {
+  cout << boolalpha << e->value;
+  return 0;
+}
+
 int ImpPrinter::visit(IdExp* e) {
   cout << e->id;
   return 0;

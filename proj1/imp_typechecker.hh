@@ -30,6 +30,7 @@ public:
   ImpType visit(BinaryExp* e);
   ImpType visit(NumberExp* e);
   ImpType visit(IdExp* e);
+  ImpType visit(BoolConst* e);
   ImpType visit(ParenthExp* e);
   ImpType visit(CondExp* e);
 };

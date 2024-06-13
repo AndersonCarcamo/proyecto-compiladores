@@ -16,7 +16,7 @@ class ImpVisitor;
 class ImpValueVisitor;
 class TypeVisitor;
 
-enum BinaryOp { PLUS, MINUS, MULT, DIV, EXP, LT, LTEQ, EQ};
+enum BinaryOp { PLUS, MINUS, MULT, DIV, EXP, LT, LTEQ, EQ, AND, OR};
 
   
 class Exp {
@@ -59,6 +59,16 @@ public:
   ~IdExp();
 };
 
+class BoolConst : public Exp {
+public:
+  bool value;
+  BoolConst(bool value);
+  int accept(ImpVisitor* v);
+  ImpValue accept(ImpValueVisitor* v);
+  ImpType accept(TypeVisitor* v);
+  ~BoolConst();
+};
+
 class ParenthExp : public Exp {
 public:
   Exp *e;
@@ -78,8 +88,6 @@ public:
   ImpType accept(TypeVisitor* v);
   ~CondExp();
 };
-
-
 
 class Stm {
 public:

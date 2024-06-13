@@ -19,6 +19,7 @@ public:
   virtual ImpType visit(BinaryExp* e) = 0;
   virtual ImpType visit(NumberExp* e) = 0;
   virtual ImpType visit(IdExp* e) = 0;
+  virtual ImpType visit(BoolConst* e) = 0;
   virtual ImpType visit(ParenthExp* e) = 0;
   virtual ImpType visit(CondExp* e) = 0;
 };
