@@ -1,4 +1,4 @@
-CC=g++
+CC=g++ --std=c++11
 
 SRC_IMP=imp_test.cpp imp.cpp imp_parser.cpp imp_value.cpp imp_printer.cpp imp_interpreter.cpp
 
