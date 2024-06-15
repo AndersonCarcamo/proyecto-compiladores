@@ -1,25 +1,25 @@
 alloc 2
 push 4
-store 1
+store 2
 push 0
-store 0
+store 1
 L0: skip
 push 0
-load 1
+load 2
 lt
-goto L1
-load 0
+jmpz L1
 load 1
+load 2
 add
-store 0
-load 1
+store 1
+load 2
 push 1
 sub
-store 1
+store 2
 goto L0
 L1: skip
-load 1
+load 2
 print
-load 0
+load 1
 print
 halt
