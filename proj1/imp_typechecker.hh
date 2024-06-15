@@ -14,7 +14,7 @@ public:
   ImpTypeChecker();
 private:
   Environment<ImpType> env;
-
+  int mem_locals = 0;
 public:
   void typecheck(Program*);
   void visit(Program*);
@@ -26,6 +26,8 @@ public:
   void visit(PrintStatement*);
   void visit(IfStatement*);
   void visit(WhileStatement*);
+
+  int getMemLocals();
   
   ImpType visit(BinaryExp* e);
   ImpType visit(NumberExp* e);

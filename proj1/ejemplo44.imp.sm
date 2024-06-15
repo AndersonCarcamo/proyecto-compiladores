@@ -1,0 +1,26 @@
+alloc 4
+push 100
+store 0
+load 0
+push 500
+lt
+jmpz L0
+push 0
+push 1
+and
+store 2
+push 0
+store 3
+load 2
+load 3
+and
+store 1
+push 500
+store 0
+load 2
+print
+goto L1
+L1: skip
+load 0
+print
+halt

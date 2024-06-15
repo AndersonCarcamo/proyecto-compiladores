@@ -1,5 +1,9 @@
 #include "imp_typechecker.hh"
 
+int ImpTypeChecker::getMemLocals(){
+  return mem_locals;
+}
+
 ImpTypeChecker::ImpTypeChecker() {
 
 }
@@ -39,6 +43,7 @@ void ImpTypeChecker::visit(VarDec* vd) {
   
   for (it = vd->vars.begin(); it != vd->vars.end(); ++it) {
     env.add_var(*it, tt);
+    mem_locals++;
   }   
   return;
 }
@@ -66,7 +71,6 @@ void ImpTypeChecker::visit(AssignStatement* s) {
     exit(0);
   }
   env.update(s->id, type);
-
   return;
 }
 
@@ -112,9 +116,6 @@ ImpType ImpTypeChecker::visit(BinaryExp* e) {
       exit(0);
     }
     return TINT; break;
-  case LT: 
-  case LTEQ: 
-  case EQ:
   case AND:
   case OR:
     if(t1 == TINT){
@@ -122,7 +123,17 @@ ImpType ImpTypeChecker::visit(BinaryExp* e) {
       exit(0);
     }
     return TBOOL; break;
+  case LT: 
+  case LTEQ:
+    if(t1 == TBOOL){
+      cout << "ERROR: La operacion " << e->binopToString(e->op) << " no sporta bools" << endl;
+      exit(0);
+    }
+    return TBOOL; break;
+  case EQ:
+    return TBOOL; break;
   }
+  return ImpType();
 }
 
 ImpType ImpTypeChecker::visit(NumberExp* e) {

@@ -14,6 +14,8 @@
 
 class ImpCodeGen : public ImpVisitor {
 public:
+  ImpCodeGen(int mem_locals);
+
   void codegen(Program*, string outfname);
   void visit(Program*);
   void visit(Body*);
@@ -29,6 +31,7 @@ public:
   int visit(BinaryExp* e);
   int visit(NumberExp* e);
   int visit(IdExp* e);
+  int visit(BoolConst* e);
   int visit(ParenthExp* e);
   int visit(CondExp* e);
 
