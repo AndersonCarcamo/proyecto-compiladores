@@ -49,7 +49,15 @@ Token* Scanner::nextToken() {
   char c;
   // consume whitespaces
   c = nextChar();
-  while (c == ' ' || c == '\t'  || c == '\n') c = nextChar();
+  while (c == ' ' || c == '\t'  || c == '\n'){
+    // ignorar comentarios 
+    c = nextChar();
+    if (c == '/'){
+        if(nextChar() == '/'){
+            while(c != '\n' && c != '\0') c = nextChar();
+        }
+    }
+  }
   if (c == '\0') return new Token(Token::END);
   startLexema();
   if (isdigit(c)) {
