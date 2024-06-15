@@ -130,8 +130,7 @@ ImpValue ImpInterpreter::visit(BinaryExp* e) {
   }
 
   ImpType type = NOTYPE;
-  iv1 = v1.int_value;
-  iv2 = v2.int_value;
+
   switch(e->op) {
   case PLUS: iv = iv1+iv2; type = TINT; break;
   case MINUS: iv = iv1-iv2; type = TINT; break;
@@ -145,7 +144,7 @@ ImpValue ImpInterpreter::visit(BinaryExp* e) {
   case LT: bv = (iv1 < iv2) ? 1 : 0; type = TBOOL; break;
   case LTEQ: bv = (iv1 <= iv2) ? 1: 0; type = TBOOL; break;
   case EQ: bv = (iv1 == iv2) ? 1 : 0; type = TBOOL; break;
-  case AND: bv = iv1 && iv2; type = TBOOL; break;
+  case AND: bv = (iv1 && iv2) ? 1 : 0; type = TBOOL; break;
   case OR: bv = iv1 || iv2; type = TBOOL; break;
   }
   if (type == TINT) result.int_value = iv;

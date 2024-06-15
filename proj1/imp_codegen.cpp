@@ -1,5 +1,7 @@
 #include "imp_codegen.hh"
 
+ImpCodeGen::ImpCodeGen(int mem_locals) : mem_locals(mem_locals) {}
+
 void ImpCodeGen::codegen(string label, string instr) {
   if (label !=  nolabel)
     code << label << ": ";
@@ -29,19 +31,19 @@ void ImpCodeGen::codegen(Program* p, string outfname) {
   nolabel = "";
   current_label = 0;
   siguiente_direccion = 0;
-  mem_locals = 0;
+  codegen(nolabel, "alloc", mem_locals);
   p->accept(this);
   ofstream outfile;
   outfile.open(outfname);
   outfile << code.str();
   outfile.close();
-  cout << "Memoria variables locales: " << mem_locals << endl;
+  // cout << "Memoria variables locales: " << mem_locals << endl;
   return;
 }
 
 void ImpCodeGen::visit(Program* p) {
-  int mem_size = 10;
-  codegen(nolabel,"alloc",mem_size);
+  // int mem_size = 10;
+  // codegen(nolabel,"alloc",mem_size);
   p->body->accept(this);
   codegen(nolabel, "halt");
   return;
@@ -135,6 +137,8 @@ int ImpCodeGen::visit(BinaryExp* e) {
   case LT:  op = "lt"; break;
   case LTEQ: op = "le"; break;
   case EQ:  op = "eq"; break;
+  case AND: op = "and"; break;
+  case OR: op = "or"; break;
   default: cout << "binop " << Exp::binopToString(e->op) << " not implemented" << endl;
   }
   codegen(nolabel, op);
@@ -143,6 +147,11 @@ int ImpCodeGen::visit(BinaryExp* e) {
 
 int ImpCodeGen::visit(NumberExp* e) {
   codegen(nolabel, "push", e->value);
+  return 0;
+}
+
+int ImpCodeGen::visit(BoolConst* e) {
+  codegen(nolabel, "push", e->value ? 1: 0);
   return 0;
 }
 

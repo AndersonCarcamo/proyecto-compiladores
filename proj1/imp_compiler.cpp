@@ -28,15 +28,18 @@ int main(int argc, const char* argv[]) {
   
   ImpPrinter printer;
   ImpInterpreter interpreter;
-  ImpTypeChecker checker;
+  ImpTypeChecker checker; // p
 
-  ImpCodeGen cg;
-  
   printer.print(program);
   
   cout << endl << "Type checking:" << endl;
   checker.typecheck(program);
+  int mem_locals = checker.getMemLocals();
+  cout << "Cantidad de memorias locales: " << mem_locals << endl;
+
+  ImpCodeGen cg = ImpCodeGen(mem_locals); //p 
   
+
   cout << endl << "Run program:" << endl;
   interpreter.interpret(program);
 
