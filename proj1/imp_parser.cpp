@@ -300,7 +300,14 @@ Stm* Parser::parseStatement() {
     if (!match(Token::ENDWHILE))
 	parserError("Esperaba 'endwhile'");
     s = new WhileStatement(e,tb);
-  } else {
+  } else if (match(Token::DO)) {
+    tb = parseBody();
+    if (!match(Token::WHILE))
+      parserError("Esperaba 'while'");
+    e = parseBExp();
+    s = new DoWhileStatement(e,tb);
+  }
+  else {
     cout << "No se encontro Statement" << endl;
     exit(0);
   }
