@@ -96,6 +96,13 @@ void ImpTypeChecker::visit(WhileStatement* s) {
  return;
 }
 
+void ImpTypeChecker::visit(DoWhileStatement* s) {
+  ImpType tcond = s->cond->accept(this);
+  if(tcond!=TBOOL){cout<< "Se esperaba un tipo booleano en la sentencia do while"; exit(0);}
+  s->body->accept(this);
+ return;
+}
+
 ImpType ImpTypeChecker::visit(BinaryExp* e) {
   ImpType t1 = e->left->accept(this);
   ImpType t2 = e->right->accept(this);

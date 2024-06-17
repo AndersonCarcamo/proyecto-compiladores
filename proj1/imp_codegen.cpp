@@ -30,7 +30,7 @@ string ImpCodeGen::next_label() {
 void ImpCodeGen::codegen(Program* p, string outfname) {
   nolabel = "";
   current_label = 0;
-  siguiente_direccion = 0;
+  siguiente_direccion = 1; //svm lee desde 1
   codegen(nolabel, "alloc", mem_locals);
   p->accept(this);
   ofstream outfile;
@@ -43,7 +43,7 @@ void ImpCodeGen::codegen(Program* p, string outfname) {
 
 void ImpCodeGen::visit(Program* p) {
   // int mem_size = 10;
-  // codegen(nolabel,"alloc",mem_size);
+  //codegen(nolabel,"alloc",mem_locals);
   p->body->accept(this);
   codegen(nolabel, "halt");
   return;
@@ -101,10 +101,11 @@ void ImpCodeGen::visit(IfStatement* s) {
   string l1 = next_label();
   string l2 = next_label();
   
+  //cond; jmpz L1; if; L1 else ;LEND
   s->cond->accept(this);
-  codegen(nolabel,"jmpz", l1);
+  codegen(nolabel,"jmpz", l1);   
   s->tbody->accept(this);
-  codegen(nolabel, "goto",l2);
+  codegen(l1, "skip");
   if (s->fbody!=NULL) {
     s->fbody->accept(this);
   }
@@ -116,10 +117,24 @@ void ImpCodeGen::visit(WhileStatement* s) {
   string l1 = next_label();
   string l2 = next_label();
 
+  //LBEGIN SKIP; cond ; jmpz LEND; do body; goto LBEGIN;LEND
   codegen(l1, "skip");
-  s->cond->accept(this);
-  codegen(nolabel, "goto", l2);
+  s->cond->accept(this); 
+  codegen(nolabel, "jmpz", l2);
   s->body->accept(this);
+  codegen(nolabel, "goto", l1);
+  codegen(l2, "skip");
+  return;
+}
+
+void ImpCodeGen::visit(DoWhileStatement* s) {
+  string l1 = next_label();
+  string l2 = next_label();
+  //do; LBEGIN SKIP; body; cond;jmpz LEND; goto LBEGIN; LEND;  
+  codegen(l1, "skip");
+  s->body->accept(this);
+  s->cond->accept(this);
+  codegen(nolabel, "jmpz", l2);
   codegen(nolabel, "goto", l1);
   codegen(l2, "skip");
   return;
