@@ -93,6 +93,11 @@ void ImpPrinter::visit(DoWhileStatement* s) {
   return;
 }
 
+int ImpPrinter::visit(Comment* s) {
+  cout << "Entra aca" << endl;
+  cout << s->comentario;
+  return 0;
+}
 
 int ImpPrinter::visit(BinaryExp* e) {
   e->left->accept(this);

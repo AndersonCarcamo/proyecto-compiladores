@@ -3,10 +3,10 @@
 #include "imp_parser.hh"
 
 
-const char* Token::token_names[31] = {
+const char* Token::token_names[32] = {
   "LPAREN" , "RPAREN", "PLUS", "MINUS", "MULT","DIV","EXP","LT","LTEQ","EQ",
   "NUM", "ID", "PRINT", "SEMICOLON", "COMMA", "ASSIGN", "CONDEXP", "IF", "THEN", "ELSE", "ENDIF", "WHILE", "DO",
-  "ENDWHILE", "ERR", "END", "VAR", "AND", "OR", "TRUE", "FALSE" };
+  "ENDWHILE", "ERR", "END", "VAR", "AND", "OR", "TRUE", "FALSE", "COMMEMT" };
 
 Token::Token(Type type):type(type) { lexema = ""; }
 
@@ -54,7 +54,9 @@ Token* Scanner::nextToken() {
     c = nextChar();
     if (c == '/'){
         if(nextChar() == '/'){
-            while(c != '\n' && c != '\0') c = nextChar();
+          string com = "//";
+          while(c != '\n' && c != '\0') {com += c; c = nextChar();}
+          return new Token(Token::COMMEMT, com);
         }
     }
   }
@@ -228,10 +230,15 @@ VarDec* Parser::parseVarDec() {
     }
     if (!match(Token::SEMICOLON)) parserError("Expecting semicolon at end of var declaration");
     vd = new VarDec(type,vars);
+    if (match(Token::COMMEMT)) parseComment();
   }
   return vd;
 }
 
+Exp* Parser::parseComment(){
+  cout << "Comentario:" << previous->lexema << endl;
+  return new Comment(previous->lexema);
+}
 
 VarDecList* Parser::parseVarDecList() {
   VarDecList* vdl = new VarDecList();
@@ -261,8 +268,11 @@ Stm* Parser::parseStatement() {
   Stm* s = NULL;
   Exp* e;
   Body *tb, *fb;
+  cout << "Current Stm: " << current << endl;
   if (match(Token::ID)) {
+    cout << "Current Stm: entra al id " << current << endl;
     string lex = previous->lexema;
+    cout << "Lexema id: " << lex << endl;
     if (!match(Token::ASSIGN)) {
       cout << "Error: esperaba =" << endl;
       exit(0);
@@ -316,6 +326,8 @@ Stm* Parser::parseStatement() {
 
 Exp* Parser::parseBExp(){
   Exp* e, *rhs;
+
+  cout << "Current BExp: " << current << endl;
   e = parseCExp();
   if(match(Token::AND) || match(Token::OR)){
     Token::Type op = previous->type;
@@ -329,6 +341,8 @@ Exp* Parser::parseBExp(){
 
 Exp* Parser::parseCExp() {
   Exp *e, *rhs;
+
+  cout << "Current CExp: " << current << endl;
   e = parseExpression();
   if(match(Token::LT) || match(Token::LTEQ) ||
 	match(Token::EQ)) {
@@ -343,6 +357,8 @@ Exp* Parser::parseCExp() {
 
 Exp* Parser::parseExpression() {
   Exp *e, *rhs;
+
+  cout << "Current Exp: " << current << endl;
   e = parseTerm();
   while(match(Token::MINUS) || match(Token::PLUS)) {
     Token::Type op = previous->type;
@@ -355,6 +371,8 @@ Exp* Parser::parseExpression() {
 
 Exp* Parser::parseTerm() {
   Exp *e, *rhs;
+
+  cout << "Current Term: " << current << endl;
   e = parseFExp();
   while(match(Token::MULT) || match(Token::DIV)) {
     Token::Type op = previous->type;
@@ -367,6 +385,8 @@ Exp* Parser::parseTerm() {
 
 Exp* Parser::parseFExp() {
   Exp *lhs, *rhs;
+
+  cout << "Current FExp: " << current << endl;
   lhs = parseFactor();
   if (match(Token::EXP)) {
     return new BinaryExp(lhs, parseFExp(), EXP);
@@ -375,6 +395,8 @@ Exp* Parser::parseFExp() {
 }
 
 Exp* Parser::parseFactor() {
+
+  cout << "Current Factor: " << current << endl;
   if (match(Token::TRUE)) {
     return new BoolConst(true);
   }

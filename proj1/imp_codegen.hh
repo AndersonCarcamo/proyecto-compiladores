@@ -27,7 +27,7 @@ public:
   void visit(IfStatement*);
   void visit(WhileStatement*);
   void visit(DoWhileStatement*);
-
+  int visit(Comment*) {return int();}
   
   int visit(BinaryExp* e);
   int visit(NumberExp* e);

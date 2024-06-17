@@ -27,7 +27,7 @@ public:
   void visit(IfStatement*);
   void visit(WhileStatement*);
   void visit(DoWhileStatement*);
-
+  ImpType visit(Comment*e) {return ImpType();}
   int getMemLocals();
   
   ImpType visit(BinaryExp* e);

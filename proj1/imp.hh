@@ -69,6 +69,16 @@ public:
   ~BoolConst();
 };
 
+class Comment : public Exp {
+public:
+  string comentario;
+  Comment(string v);
+  int accept(ImpVisitor* v);
+  ImpValue accept(ImpValueVisitor* v);
+  ImpType accept(TypeVisitor* v);
+  ~Comment();
+};
+
 class ParenthExp : public Exp {
 public:
   Exp *e;
@@ -153,6 +163,7 @@ public:
   void accept(TypeVisitor* v);
   ~DoWhileStatement();
 };
+
 
 
 class StatementList {

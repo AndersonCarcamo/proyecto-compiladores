@@ -27,6 +27,7 @@ IdExp::IdExp(string id):id(id) {}
 BoolConst::BoolConst(bool value):value(value) {}
 ParenthExp::ParenthExp(Exp *e):e(e){}
 CondExp::CondExp(Exp *c, Exp* et, Exp* ef):cond(c), etrue(et), efalse(ef){}
+Comment::Comment(string v): comentario(v) {}
 
 Exp::~Exp() {}
 BinaryExp::~BinaryExp() { delete left; delete right; }
@@ -35,6 +36,7 @@ IdExp::~IdExp() { }
 BoolConst::~BoolConst() { }
 ParenthExp::~ParenthExp(){ delete e; }
 CondExp::~CondExp(){ delete cond; delete etrue; delete efalse; }
+Comment::~Comment(){}
 
 // ImpVisitor
 int BinaryExp::accept(ImpVisitor* v) {
@@ -53,6 +55,10 @@ int ParenthExp::accept(ImpVisitor* v) {
   return v->visit(this);
 }
 int CondExp::accept(ImpVisitor* v) {
+  return v->visit(this);
+}
+
+int Comment::accept(ImpVisitor* v) {
   return v->visit(this);
 }
 
@@ -76,6 +82,10 @@ ImpValue CondExp::accept(ImpValueVisitor* v) {
   return v->visit(this);
 }
 
+ImpValue Comment::accept(ImpValueVisitor* v) {
+  return ImpValue();
+}
+
 // TypeVisitor
 ImpType BinaryExp::accept(TypeVisitor* v) {
   return v->visit(this);
@@ -94,6 +104,10 @@ ImpType ParenthExp::accept(TypeVisitor* v) {
 }
 ImpType CondExp::accept(TypeVisitor* v) {
   return v->visit(this);
+}
+
+ImpType Comment::accept(TypeVisitor* v){
+  return ImpType();
 }
 
 AssignStatement::AssignStatement(string id, Exp* e):id(id), rhs(e) { }
@@ -188,6 +202,7 @@ void Program::accept(ImpValueVisitor* v) {
   return v->visit(this);
 }
 
+
 // TypeVisitor
 void AssignStatement::accept(TypeVisitor* v) {
   return v->visit(this);
@@ -219,9 +234,3 @@ void Body::accept(TypeVisitor* v) {
 void Program::accept(TypeVisitor* v) {
   return v->visit(this);
 }
-
-
-
-
-
-

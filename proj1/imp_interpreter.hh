@@ -24,7 +24,8 @@ public:
   void visit(IfStatement*);
   void visit(WhileStatement*);
   void visit(DoWhileStatement*);
-  
+  ImpValue visit(Comment*e){return ImpValue();}
+
   ImpValue visit(BinaryExp* e);
   ImpValue visit(NumberExp* e);
   ImpValue visit(IdExp* e);

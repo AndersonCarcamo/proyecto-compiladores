@@ -16,12 +16,14 @@ public:
   virtual void visit(WhileStatement* e) = 0;
   virtual void visit(DoWhileStatement* e) = 0;
   
+  
   virtual int visit(BinaryExp* e) = 0;
   virtual int visit(NumberExp* e) = 0;
   virtual int visit(IdExp* e) = 0;
   virtual int visit(BoolConst* e) = 0;
   virtual int visit(ParenthExp* e) = 0;
   virtual int visit(CondExp* e) = 0;
+  virtual int visit(Comment* e) = 0;
 };
 
 

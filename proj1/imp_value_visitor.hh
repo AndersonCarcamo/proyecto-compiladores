@@ -17,12 +17,14 @@ public:
   virtual void visit(WhileStatement* e) = 0;
   virtual void visit(DoWhileStatement* e) = 0;
   
+  
   virtual ImpValue visit(BinaryExp* e) = 0;
   virtual ImpValue visit(NumberExp* e) = 0;
   virtual ImpValue visit(IdExp* e) = 0;
   virtual ImpValue visit(BoolConst* e) = 0;
   virtual ImpValue visit(ParenthExp* e) = 0;
   virtual ImpValue visit(CondExp* e) = 0;
+  virtual ImpValue visit(Comment* e) = 0;
 };
 
 
