@@ -30,7 +30,7 @@ string ImpCodeGen::next_label() {
 void ImpCodeGen::codegen(Program* p, string outfname) {
   nolabel = "";
   current_label = 0;
-  siguiente_direccion = 0;
+  siguiente_direccion = 1;
   codegen(nolabel, "alloc", mem_locals);
   p->accept(this);
   ofstream outfile;
@@ -105,6 +105,7 @@ void ImpCodeGen::visit(IfStatement* s) {
   codegen(nolabel,"jmpz", l1);
   s->tbody->accept(this);
   codegen(nolabel, "goto",l2);
+  codegen(l1, "skip");
   if (s->fbody!=NULL) {
     s->fbody->accept(this);
   }
